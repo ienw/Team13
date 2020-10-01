@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Point
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -25,7 +24,7 @@ import org.osmdroid.views.overlay.Marker
 class App : AppCompatActivity(), LocationListener{
 
     var lm: LocationManager? = null
-   
+
     @SuppressLint("MissingPermission")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,32 +44,43 @@ class App : AppCompatActivity(), LocationListener{
         // map setup code
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
-        map.controller.setZoom(30.0)
+        map.controller.setZoom(80.0)
 
         // setup location polling
         lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1f, this)
 
-        // open camera taking photo
+        // open camera taking photo gallery
         findViewById<Button>(R.id.cmr).setOnClickListener {
             openCamera()
+        }
+        findViewById<Button>(R.id.gallery).setOnClickListener {
+            openGallery()
         }
 
     }
 
+
+    //open gallery
+    val GALLERY_REQUEST = 1
+    private fun openGallery() {
+        val gintent = Intent(Intent.ACTION_PICK)
+        gintent.type = "image/*"
+        startActivityForResult(gintent, GALLERY_REQUEST)
+    }
+    //open camera
     var image_uri: Uri? = null
     private fun openCamera() {
         val values = ContentValues()
         values.put(MediaStore.Images.Media.TITLE, "New Picture")
-        values.put(MediaStore.Images.Media.DESCRIPTION,"New location")
+        values.put(MediaStore.Images.Media.DESCRIPTION, "New location")
         image_uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
         //camera intent
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
         startActivityForResult(cameraIntent, 1)
+
     }
-
-
 
 
 
@@ -83,8 +93,10 @@ class App : AppCompatActivity(), LocationListener{
             // create user current location marker for map
             val userMarker = Marker(map)
             userMarker.position = userLocation
-            val customIcon = ResourcesCompat.getDrawable(resources,
-                R.drawable.location_icon, null)
+            val customIcon = ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.location_icon, null
+            )
             if (customIcon != null) {
                 userMarker.icon = customIcon
             }
