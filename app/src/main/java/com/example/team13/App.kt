@@ -1,43 +1,31 @@
 package com.example.team13
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.Point
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
-
 import kotlinx.android.synthetic.main.app.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.jar.Manifest
 
-private lateinit var photoFile: File
-class App : AppCompatActivity(), LocationListener {
+
+class App : AppCompatActivity(), LocationListener{
 
     var lm: LocationManager? = null
-
+   
     @SuppressLint("MissingPermission")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,60 +52,29 @@ class App : AppCompatActivity(), LocationListener {
         lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1f, this)
 
         // open camera taking photo
-        findViewById<Button>(R.id.cmr).setOnClickListener { view ->
-            TakePicture()
+        findViewById<Button>(R.id.cmr).setOnClickListener {
+            openCamera()
         }
-
-
 
     }
 
-
-    lateinit var currentPhotoPath: String
-
-    @Throws(IOException::class)
-
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-            "JPEG_${timeStamp}_",
-            ".jpg",
-            storageDir
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
-        }
+    var image_uri: Uri? = null
+    private fun openCamera() {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+        values.put(MediaStore.Images.Media.DESCRIPTION,"New location")
+        image_uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        //camera intent
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
+        startActivityForResult(cameraIntent, 1)
     }
 
 
-    private fun TakePicture() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(takePictureIntent, 1)
-        val photoFile: File? = try {
-            createImageFile()
-        }catch (ex: IOException) {
-            // Error occurred while creating the File
-
-            null
-        }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        this,
-                        "com.example.team13",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, 1)
-                }
-            }
 
 
 
-
-        override fun onLocationChanged(location: Location?) {
+    override fun onLocationChanged(location: Location?) {
         if (location != null) {
             val userLocation = GeoPoint(location.latitude, location.longitude)
             // center map to users location
@@ -144,5 +101,4 @@ class App : AppCompatActivity(), LocationListener {
     }
     override fun onProviderDisabled(provider: String?) {
     }
-
 }
