@@ -29,12 +29,20 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/Gallary" />
+        android:text="@string/Gallery" />
 
-<ImageView
-    android:id="@+id/ImageView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+    <ImageView
+        android:id="@+id/ImageView"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:scaleType="center"
+        android:elevation="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+      />
+
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="0dp"

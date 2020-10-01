@@ -14,6 +14,7 @@ import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import kotlinx.android.synthetic.main.app.*
@@ -55,6 +56,7 @@ class App : AppCompatActivity(), LocationListener{
         // open camera taking photo gallery
         findViewById<Button>(R.id.cmr).setOnClickListener {
             openCamera()
+            Toast.makeText(this,"Got Photo", Toast.LENGTH_SHORT)
         }
         findViewById<Button>(R.id.gallery).setOnClickListener {
             openGallery()
@@ -69,6 +71,13 @@ class App : AppCompatActivity(), LocationListener{
         val gintent = Intent(Intent.ACTION_PICK)
         gintent.type = "image/*"
         startActivityForResult(gintent, GALLERY_REQUEST)
+    }
+    var REQUEST_CODE = 1
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
+            findViewById<ImageView>(R.id.ImageView).setImageURI(data?.data)
+        }
     }
 
     //open camera
