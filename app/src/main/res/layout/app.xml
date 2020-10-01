@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".App">
 
-    <ImageButtonButton
+    <ImageButton
         android:id="@+id/cmr"
         android:layout_width="60dp"
         android:layout_height="62dp"
@@ -28,7 +28,8 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_gallery" />
+        app:srcCompat="@android:drawable/ic_menu_gallery"
+        android:contentDescription="TODO" />
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
