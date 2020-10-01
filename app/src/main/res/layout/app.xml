@@ -6,31 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".App">
 
-    <ImageButton
+    <Button
         android:id="@+id/cmr"
-        android:layout_width="60dp"
-        android:layout_height="62dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="40dp"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera"
+        android:text="@string/Camera"
         android:focusable="true" />
 
-    <ImageButton
+
+    <Button
         android:id="@+id/gallery"
-        android:layout_width="60dp"
-        android:layout_height="62dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginBottom="40dp"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_gallery"
-        android:contentDescription="TODO" />
+        android:text="@string/Gallary" />
 
+<ImageView
+    android:id="@+id/ImageView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="0dp"
