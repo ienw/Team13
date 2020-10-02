@@ -13,10 +13,12 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import com.getbase.floatingactionbutton.FloatingActionsMenu
 import kotlinx.android.synthetic.main.app.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -54,11 +56,12 @@ class App : AppCompatActivity(), LocationListener{
         lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1f, this)
 
         // open camera taking photo gallery
-        findViewById<Button>(R.id.cmr).setOnClickListener {
+        findViewById<ImageButton>(R.id.cmr).setOnClickListener {
             openCamera()
-            Toast.makeText(this,"Got Photo", Toast.LENGTH_SHORT)
+            Toast.makeText(this,"Got Photo", Toast.LENGTH_SHORT).show()
+
         }
-        findViewById<Button>(R.id.gallery).setOnClickListener {
+        findViewById<ImageButton>(R.id.gallery).setOnClickListener {
             openGallery()
         }
 
@@ -92,6 +95,7 @@ class App : AppCompatActivity(), LocationListener{
         startActivityForResult(cameraIntent, 1)
 
     }
+
 
 
 

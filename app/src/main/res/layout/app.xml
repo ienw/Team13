@@ -6,30 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".App">
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="120dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+       />
+
+    <ImageButton
         android:id="@+id/cmr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="40dp"
+        app:srcCompat="@android:drawable/ic_menu_camera"
+        android:elevation="20dp"
         android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/Camera"
-        android:focusable="true" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <Button
+    <ImageButton
         android:id="@+id/gallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginBottom="40dp"
+        app:srcCompat="@android:drawable/ic_menu_gallery"
+        android:elevation="20dp"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/Gallery" />
+         />
 
     <ImageView
         android:id="@+id/ImageView"
@@ -53,6 +66,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
+
 
     </org.osmdroid.views.MapView>
 
