@@ -12,14 +12,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.getbase.floatingactionbutton.FloatingActionButton
-import com.getbase.floatingactionbutton.FloatingActionsMenu
 import kotlinx.android.synthetic.main.app.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -38,7 +35,6 @@ class App : AppCompatActivity(), LocationListener{
 
         super.onCreate(savedInstanceState)
 
-
         val ctx = applicationContext
 
         //important! set your user agent to prevent getting banned from the osm servers
@@ -50,17 +46,17 @@ class App : AppCompatActivity(), LocationListener{
         // map setup code
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
-        map.controller.setZoom(80.0)
+        map.controller.setZoom(100.0)
 
         // setup location polling
         lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1f, this)
+        lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 170f, this)
 
         // open camera taking photo gallery
 
         findViewById<FloatingActionButton>(R.id.cmr).setOnClickListener {
             openCamera()
-            Toast.makeText(this,"Got Photo", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Go to Camera", Toast.LENGTH_SHORT).show()
 
         }
         findViewById<FloatingActionButton>(R.id.gallery).setOnClickListener {
@@ -100,8 +96,8 @@ class App : AppCompatActivity(), LocationListener{
 
 
 
-
     override fun onLocationChanged(location: Location?) {
+        val cmr = findViewById<FloatingActionButton>(R.id.cmr)
         if (location != null) {
             val userLocation = GeoPoint(location.latitude, location.longitude)
             // center map to users location
@@ -114,8 +110,15 @@ class App : AppCompatActivity(), LocationListener{
                 resources,
                 R.drawable.location_icon, null
             )
-            if (customIcon != null) {
-                userMarker.icon = customIcon
+            val mMarker = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
+            if (customIcon != null ) {
+
+                if(cmr != null){
+                    userMarker.icon = mMarker
+                }else {
+                    userMarker.icon = customIcon
+                }
+
             }
 
             // Clear old marker before adding new one
