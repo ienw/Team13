@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import com.getbase.floatingactionbutton.FloatingActionButton
 import com.getbase.floatingactionbutton.FloatingActionsMenu
 import kotlinx.android.synthetic.main.app.*
 import org.osmdroid.config.Configuration
@@ -56,12 +57,13 @@ class App : AppCompatActivity(), LocationListener{
         lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1f, this)
 
         // open camera taking photo gallery
-        findViewById<ImageButton>(R.id.cmr).setOnClickListener {
+
+        findViewById<FloatingActionButton>(R.id.cmr).setOnClickListener {
             openCamera()
             Toast.makeText(this,"Got Photo", Toast.LENGTH_SHORT).show()
 
         }
-        findViewById<ImageButton>(R.id.gallery).setOnClickListener {
+        findViewById<FloatingActionButton>(R.id.gallery).setOnClickListener {
             openGallery()
         }
 
