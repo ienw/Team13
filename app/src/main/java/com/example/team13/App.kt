@@ -105,19 +105,17 @@ class App : AppCompatActivity(), LocationListener{
 
             // create user current location marker for map
             val userMarker = Marker(map)
+
             userMarker.position = userLocation
             val customIcon = ResourcesCompat.getDrawable(
                 resources,
                 R.drawable.location_icon, null
             )
-            val mMarker = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
+            val mIcon = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
+
             if (customIcon != null ) {
 
-                if(cmr != null){
-                    userMarker.icon = mMarker
-                }else {
                     userMarker.icon = customIcon
-                }
 
             }
 
