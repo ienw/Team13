@@ -9,6 +9,8 @@
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
         android:elevation="20dp"
         app:fab_addButtonSize="mini"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -20,14 +22,23 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_camera"
             app:fab_colorNormal="@color/white"
-            app:fab_size="mini"/>
+            app:fab_size="mini" />
+
         <com.getbase.floatingactionbutton.AddFloatingActionButton
             android:id="@+id/gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
             android:src="@drawable/ic_baseline_photo"
-            app:fab_size="mini"/>
+            app:fab_colorNormal="@color/white"
+            app:fab_size="mini" />
+
+        <com.getbase.floatingactionbutton.AddFloatingActionButton
+            android:id="@+id/marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_bookmarks"
+            app:fab_colorNormal="@color/white"
+            app:fab_size="mini" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

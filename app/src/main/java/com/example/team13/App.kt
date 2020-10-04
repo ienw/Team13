@@ -105,7 +105,7 @@ class App : AppCompatActivity(), LocationListener{
 
             // create user current location marker for map
             val userMarker = Marker(map)
-
+            var mMarker = Marker(map)
             userMarker.position = userLocation
             val customIcon = ResourcesCompat.getDrawable(
                 resources,
@@ -116,7 +116,13 @@ class App : AppCompatActivity(), LocationListener{
             if (customIcon != null ) {
 
                     userMarker.icon = customIcon
-
+                 
+            }
+            findViewById<FloatingActionButton>(R.id.marker).setOnClickListener {
+                mMarker = Marker(map)
+                mMarker.position = userLocation
+                mMarker.icon = mIcon
+                map.overlays.add(mMarker)
             }
 
             // Clear old marker before adding new one
