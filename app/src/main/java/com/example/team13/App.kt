@@ -45,8 +45,9 @@ class App : AppCompatActivity(), LocationListener{
 
         // map setup code
         map.setTileSource(TileSourceFactory.MAPNIK)
+        map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
-        map.controller.setZoom(100.0)
+        map.controller.setZoom(10.5)
 
         // setup location polling
         lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -97,13 +98,13 @@ class App : AppCompatActivity(), LocationListener{
 
 
     override fun onLocationChanged(location: Location?) {
-        val cmr = findViewById<FloatingActionButton>(R.id.cmr)
         if (location != null) {
             val userLocation = GeoPoint(location.latitude, location.longitude)
             // center map to users location
             map.controller.setCenter(userLocation)
 
             // create user current location marker for map
+
             val userMarker = Marker(map)
             var mMarker = Marker(map)
             userMarker.position = userLocation
@@ -111,12 +112,13 @@ class App : AppCompatActivity(), LocationListener{
                 resources,
                 R.drawable.location_icon, null
             )
+            // add marker which show on map where the photo taken
             val mIcon = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
 
             if (customIcon != null ) {
 
                     userMarker.icon = customIcon
-                 
+
             }
             findViewById<FloatingActionButton>(R.id.marker).setOnClickListener {
                 mMarker = Marker(map)
