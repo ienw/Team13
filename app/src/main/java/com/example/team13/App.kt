@@ -47,11 +47,11 @@ class App : AppCompatActivity(), LocationListener{
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
-        map.controller.setZoom(10.5)
+        map.controller.setZoom(9.5)
 
         // setup location polling
         lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 170f, this)
+        lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 170f, this)
 
         // open camera taking photo gallery
 
