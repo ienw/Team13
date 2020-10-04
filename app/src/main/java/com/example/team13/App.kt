@@ -125,7 +125,7 @@ class App : AppCompatActivity(), LocationListener{
                 mMarker.position = userLocation
                 mMarker.icon = mIcon
                 map.overlays.add(mMarker)
-                mMarker.setTitle("I have been here!");
+                mMarker.setTitle("I have been here!")
 
 
             }
