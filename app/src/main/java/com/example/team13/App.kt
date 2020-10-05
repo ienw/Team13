@@ -22,6 +22,8 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class App : AppCompatActivity(), LocationListener{
@@ -120,12 +122,15 @@ class App : AppCompatActivity(), LocationListener{
                     userMarker.icon = customIcon
 
             }
+            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+
             findViewById<FloatingActionButton>(R.id.marker).setOnClickListener {
                 mMarker = Marker(map)
                 mMarker.position = userLocation
                 mMarker.icon = mIcon
                 map.overlays.add(mMarker)
                 mMarker.setTitle("I have been here!")
+                mMarker.
 
 
             }
