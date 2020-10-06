@@ -5,13 +5,16 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,10 +28,20 @@ import org.osmdroid.views.overlay.Marker
 import java.text.SimpleDateFormat
 import java.util.*
 
+class PhotoLocation(
+    val latitude: Double,
+    val longitude: Double,
+    val image: Uri) {
+}
+
+val GALLERY_REQUEST = 1
+var REQUEST_CODE = 2
+val REQUEST_IMAGE_CAPTURE = 3
 
 class App : AppCompatActivity(), LocationListener{
 
     var lm: LocationManager? = null
+    var photoLocations = mutableListOf<PhotoLocation>()
 
     @SuppressLint("MissingPermission")
 
@@ -51,6 +64,7 @@ class App : AppCompatActivity(), LocationListener{
         map.setMultiTouchControls(true)
         map.controller.setZoom(9.5)
 
+
         // setup location polling
         lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 170f, this)
@@ -70,17 +84,28 @@ class App : AppCompatActivity(), LocationListener{
 
 
     //open gallery
-    val GALLERY_REQUEST = 1
     private fun openGallery() {
         val gintent = Intent(Intent.ACTION_PICK)
         gintent.type = "image/*"
         startActivityForResult(gintent, GALLERY_REQUEST)
     }
-    var REQUEST_CODE = 1
+    @SuppressLint("MissingPermission")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
             findViewById<ImageView>(R.id.ImageView).setImageURI(data?.data)
+        }
+        Log.d("asd", "ACTIVITYRESULT code ${requestCode} result ${resultCode} is ok ${resultCode == Activity.RESULT_OK}")
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            Log.d("asd", "RECEIVING IMAGE ${data.toString()}")
+            val latitude = lm!!.getLastKnownLocation(LocationManager.GPS_PROVIDER).latitude
+            val longitude = lm!!.getLastKnownLocation(LocationManager.GPS_PROVIDER).longitude
+            if (image_uri != null) {
+                Log.d("asd", "RECDEIVED IMAGE ${image_uri.toString()}")
+                val marker = PhotoLocation(latitude, longitude, image_uri!!)
+                photoLocations.add(marker)
+                addPhotoMarker(marker)
+            }
         }
     }
 
@@ -93,11 +118,23 @@ class App : AppCompatActivity(), LocationListener{
         //camera intent
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
-        startActivityForResult(cameraIntent, 1)
-
+        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE)
     }
 
-
+    private fun addPhotoMarker(it: PhotoLocation) {
+        val location = GeoPoint(it.latitude, it.longitude)
+        var marker = Marker(map)
+        val icon = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
+        if (icon != null) {
+            marker.icon = icon
+        }
+        marker.setOnMarkerClickListener(Marker.OnMarkerClickListener { marker, map ->
+            ImageView.setImageURI(it.image)
+            true
+        })
+        marker.position = location
+        map.overlays.add(marker)
+    }
 
     override fun onLocationChanged(location: Location?) {
         if (location != null) {
@@ -106,22 +143,26 @@ class App : AppCompatActivity(), LocationListener{
             map.controller.setCenter(userLocation)
 
             // create user current location marker for map
-
             val userMarker = Marker(map)
-            var mMarker = Marker(map)
             userMarker.position = userLocation
             val customIcon = ResourcesCompat.getDrawable(
                 resources,
                 R.drawable.location_icon, null
             )
+            if (customIcon != null ) {
+                userMarker.icon = customIcon
+            }
+            // Clear old marker before adding new one
+            map.overlays.clear()
+            // map.overlays.add(userMarker)
+            photoLocations.forEach {
+                addPhotoMarker(it)
+            }
+
+            /*
             // add marker which show on map where the photo taken
             val mIcon = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
 
-            if (customIcon != null ) {
-
-                    userMarker.icon = customIcon
-
-            }
             val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
 
             findViewById<FloatingActionButton>(R.id.marker).setOnClickListener {
@@ -130,14 +171,8 @@ class App : AppCompatActivity(), LocationListener{
                 mMarker.icon = mIcon
                 map.overlays.add(mMarker)
                 mMarker.setTitle("I have been here!")
-                mMarker.
-
-
             }
-
-            // Clear old marker before adding new one
-            map.overlays.clear()
-            map.overlays.add(userMarker)
+            */
         }
     }
 
