@@ -154,7 +154,7 @@ class App : AppCompatActivity(), LocationListener{
             }
             // Clear old marker before adding new one
             map.overlays.clear()
-            // map.overlays.add(userMarker)
+            map.overlays.add(userMarker)
             photoLocations.forEach {
                 addPhotoMarker(it)
             }
