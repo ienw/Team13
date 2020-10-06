@@ -158,21 +158,6 @@ class App : AppCompatActivity(), LocationListener{
             photoLocations.forEach {
                 addPhotoMarker(it)
             }
-
-            /*
-            // add marker which show on map where the photo taken
-            val mIcon = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
-
-            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-
-            findViewById<FloatingActionButton>(R.id.marker).setOnClickListener {
-                mMarker = Marker(map)
-                mMarker.position = userLocation
-                mMarker.icon = mIcon
-                map.overlays.add(mMarker)
-                mMarker.setTitle("I have been here!")
-            }
-            */
         }
     }
 
