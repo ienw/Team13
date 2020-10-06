@@ -1,27 +1,42 @@
 package com.example.team13
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.provider.MediaStore
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import com.getbase.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.app.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import java.text.SimpleDateFormat
+import java.util.*
 
-class App : AppCompatActivity(), LocationListener {
+
+class App : AppCompatActivity(), LocationListener{
 
     var lm: LocationManager? = null
 
     @SuppressLint("MissingPermission")
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
+
         val ctx = applicationContext
 
         //important! set your user agent to prevent getting banned from the osm servers
@@ -32,13 +47,57 @@ class App : AppCompatActivity(), LocationListener {
 
         // map setup code
         map.setTileSource(TileSourceFactory.MAPNIK)
+        map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
-        map.controller.setZoom(30.0)
+        map.controller.setZoom(9.5)
 
         // setup location polling
         lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1f, this)
+        lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 170f, this)
+
+        // open camera taking photo gallery
+
+        findViewById<FloatingActionButton>(R.id.cmr).setOnClickListener {
+            openCamera()
+            Toast.makeText(this, "Go to Camera", Toast.LENGTH_SHORT).show()
+
+        }
+        findViewById<FloatingActionButton>(R.id.gallery).setOnClickListener {
+            openGallery()
+        }
+
     }
+
+
+    //open gallery
+    val GALLERY_REQUEST = 1
+    private fun openGallery() {
+        val gintent = Intent(Intent.ACTION_PICK)
+        gintent.type = "image/*"
+        startActivityForResult(gintent, GALLERY_REQUEST)
+    }
+    var REQUEST_CODE = 1
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
+            findViewById<ImageView>(R.id.ImageView).setImageURI(data?.data)
+        }
+    }
+
+    //open camera
+    var image_uri: Uri? = null
+    private fun openCamera() {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+        image_uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        //camera intent
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
+        startActivityForResult(cameraIntent, 1)
+
+    }
+
+
 
     override fun onLocationChanged(location: Location?) {
         if (location != null) {
@@ -47,12 +106,33 @@ class App : AppCompatActivity(), LocationListener {
             map.controller.setCenter(userLocation)
 
             // create user current location marker for map
+
             val userMarker = Marker(map)
+            var mMarker = Marker(map)
             userMarker.position = userLocation
-            val customIcon = ResourcesCompat.getDrawable(resources,
-                R.drawable.location_icon, null)
-            if (customIcon != null) {
-                userMarker.icon = customIcon
+            val customIcon = ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.location_icon, null
+            )
+            // add marker which show on map where the photo taken
+            val mIcon = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
+
+            if (customIcon != null ) {
+
+                    userMarker.icon = customIcon
+
+            }
+            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+
+            findViewById<FloatingActionButton>(R.id.marker).setOnClickListener {
+                mMarker = Marker(map)
+                mMarker.position = userLocation
+                mMarker.icon = mIcon
+                map.overlays.add(mMarker)
+                mMarker.setTitle("I have been here!")
+                mMarker.
+
+
             }
 
             // Clear old marker before adding new one

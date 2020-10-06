@@ -7,9 +7,18 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
+import android.widget.Button
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +27,10 @@ class MainActivity : AppCompatActivity() {
 
         // we use mainactivity just to check permissions
         checkPermissions()
+
     }
+
+
 
     // when permissions are ok we launch actual app
     private fun launchApp() {
@@ -27,52 +39,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun hasAllPermissions(): Boolean {
         return ActivityCompat.checkSelfPermission(this,
             Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun checkPermissions() {
         // storage permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
-            PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                ),
-                1
-            )
-        }
 
-        // location permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                            android.Manifest.permission.ACCESS_FINE_LOCATION
-                    ),
-                    0
-            )
+        val permissions = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        requestPermissions(permissions,1)
 
-            Log.d("asd", "NO PERMISSION FOR LOCATION, ASKING FOR ACCESS")
-            status.text = "ASKING FOR LOCATION PERMISSION"
-            return
-        }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
-            PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                ),
-                1
-            )
-        }
-        launchApp()
+
+            launchApp()
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -89,4 +79,5 @@ class MainActivity : AppCompatActivity() {
             status.text = "PERMISSION NOT GRANTED"
         }
     }
+
 }

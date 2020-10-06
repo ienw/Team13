@@ -6,13 +6,71 @@
     android:layout_height="match_parent"
     tools:context=".App">
 
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
+        android:elevation="20dp"
+        app:fab_addButtonSize="mini"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.getbase.floatingactionbutton.AddFloatingActionButton
+            android:id="@+id/cmr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_camera"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/white"
+            app:fab_size="mini" />
+
+        <com.getbase.floatingactionbutton.AddFloatingActionButton
+            android:id="@+id/gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_photo"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/white"
+            app:fab_size="mini" />
+
+        <com.getbase.floatingactionbutton.AddFloatingActionButton
+            android:id="@+id/marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_bookmarks"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/white"
+            app:fab_size="mini" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+
+    <ImageView
+        android:id="@+id/ImageView"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:scaleType="center"
+        android:elevation="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+      />
+
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+
+    </org.osmdroid.views.MapView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
