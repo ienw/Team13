@@ -2,32 +2,33 @@ package com.example.team13
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
+import android.view.Window
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.getbase.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.app.*
+import kotlinx.android.synthetic.main.image_layout.*
+import kotlinx.android.synthetic.main.image_layout.view.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
-import java.text.SimpleDateFormat
-import java.util.*
 
+// class that contains image and location information
 class PhotoLocation(
     val latitude: Double,
     val longitude: Double,
@@ -35,7 +36,6 @@ class PhotoLocation(
 }
 
 val GALLERY_REQUEST = 1
-var REQUEST_CODE = 2
 val REQUEST_IMAGE_CAPTURE = 3
 
 class App : AppCompatActivity(), LocationListener{
@@ -69,7 +69,7 @@ class App : AppCompatActivity(), LocationListener{
         lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         lm!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 170f, this)
 
-        // open camera taking photo gallery
+        // open camera taking photo image_layout
 
         findViewById<FloatingActionButton>(R.id.cmr).setOnClickListener {
             openCamera()
@@ -82,8 +82,20 @@ class App : AppCompatActivity(), LocationListener{
 
     }
 
+    private fun showImage(uri: Uri) {
+        val settingsDialog = Dialog(this)
+        settingsDialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+        val modalView = layoutInflater.inflate(
+            R.layout.image_layout
+            , null
+        )
+        settingsDialog.setContentView(modalView)
+        settingsDialog.setCanceledOnTouchOutside(true);
+        modalView.image.setImageURI(uri)
+        settingsDialog.show()
+    }
 
-    //open gallery
+    //open image_layout
     private fun openGallery() {
         val gintent = Intent(Intent.ACTION_PICK)
         gintent.type = "image/*"
@@ -92,8 +104,10 @@ class App : AppCompatActivity(), LocationListener{
     @SuppressLint("MissingPermission")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
-            findViewById<ImageView>(R.id.ImageView).setImageURI(data?.data)
+        if (resultCode == Activity.RESULT_OK && requestCode == GALLERY_REQUEST){
+            if (data?.data != null) {
+                showImage(data.data!!)
+            }
         }
         Log.d("asd", "ACTIVITYRESULT code ${requestCode} result ${resultCode} is ok ${resultCode == Activity.RESULT_OK}")
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
@@ -129,7 +143,7 @@ class App : AppCompatActivity(), LocationListener{
             marker.icon = icon
         }
         marker.setOnMarkerClickListener(Marker.OnMarkerClickListener { marker, map ->
-            ImageView.setImageURI(it.image)
+            showImage(it.image)
             true
         })
         marker.position = location
