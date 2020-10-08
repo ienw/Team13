@@ -19,6 +19,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.room.*
 import com.getbase.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.app.*
 import kotlinx.android.synthetic.main.image_layout.*
@@ -29,11 +30,40 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 
 // class that contains image and location information
+
 class PhotoLocation(
-    val latitude: Double,
-    val longitude: Double,
-    val image: Uri) {
+    var latitude: Double,
+    var longitude: Double,
+    var image: Uri) {
 }
+
+@Entity
+data class Marker(
+    @PrimaryKey val uid: Int,
+    @ColumnInfo( name = "latitude") val latitude: Double?,
+    @ColumnInfo(name = "longitude") val longitude: Double?,
+    @ColumnInfo(name = "image") val image: Uri?,
+)
+
+
+@Dao
+interface MarkerDao {
+    @Query("SELECT * FROM Marker")
+    fun getAll(): List<Marker>
+
+    @Insert
+    fun insertAll(vararg marker: Marker)
+
+    @Delete
+    fun delete(marker: Marker)
+
+}
+@Database(entities = arrayOf(Marker::class), version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun markerDao(): MarkerDao
+
+}
+
 
 val GALLERY_REQUEST = 1
 val REQUEST_IMAGE_CAPTURE = 3
@@ -79,7 +109,11 @@ class App : AppCompatActivity(), LocationListener{
         findViewById<FloatingActionButton>(R.id.gallery).setOnClickListener {
             openGallery()
         }
-
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).build()
+        
     }
 
     private fun showImage(uri: Uri) {
