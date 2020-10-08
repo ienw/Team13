@@ -34,15 +34,6 @@
             app:fab_colorPressed="@color/white"
             app:fab_size="mini" />
 
-        <com.getbase.floatingactionbutton.AddFloatingActionButton
-            android:id="@+id/marker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_bookmarks"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white"
-            app:fab_size="mini" />
-
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 
