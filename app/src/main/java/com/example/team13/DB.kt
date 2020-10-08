@@ -4,6 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.net.Uri
+
+
 
 class DB(context: Context):SQLiteOpenHelper(context,DATABASE_NAME, null,DATABASE_VAR) {
     companion object{
@@ -12,12 +15,13 @@ class DB(context: Context):SQLiteOpenHelper(context,DATABASE_NAME, null,DATABASE
         private val TABLE_NAME = "Marker"
         private val LA = "latitude"
         private val LO = "longitude"
+        private val IMAG = "Image"
 
 
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val Creat_Marker : String =  ("Create table $TABLE_NAME  ($LA,  $LO)")
+        val Creat_Marker : String =  ("Create table $TABLE_NAME  ($LA,  $LO, $IMAG)")
         db!!.execSQL(Creat_Marker)
     }
 
@@ -26,33 +30,36 @@ class DB(context: Context):SQLiteOpenHelper(context,DATABASE_NAME, null,DATABASE
         onCreate(db!!)
     }
 
-    val allMarker:List<Marker>
+    val allMarker:List<PhotoLocation>
         get() {
-        val lastMarkers = ArrayList<Marker>()
+        val lastMarkers = ArrayList<PhotoLocation>()
         val selectQuery = "Select * FROM $TABLE_NAME"
         val db = this.writableDatabase
         val cursor = db.rawQuery(selectQuery, null)
         if (cursor.moveToFirst()) {
              do {
-                 val marker= Marker(Double.NaN, Double.NaN)
+                 val marker= PhotoLocation()
                  marker.latitude = cursor.getDouble(cursor.getColumnIndex(LA))
                  marker.longitude = cursor.getDouble(cursor.getColumnIndex(LO))
+                 marker.image = cursor.notificationUri
+
                  lastMarkers.add(marker)
              }while(cursor.moveToNext())
          }
             db.close()
         return lastMarkers
     }
-    fun addMarker(marker:Marker)
+    fun addMarker(marker:PhotoLocation)
     {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(LA, marker.latitude)
         values.put(LO, marker.longitude)
+        values.put(IMAG,marker.image.toByte())
         db.insert(TABLE_NAME, null, values)
         db.close()
     }
-    fun deleteMarker(marker:Marker)
+    fun deleteMarker(marker:PhotoLocation)
     {
         val db = this.writableDatabase
 
@@ -61,3 +68,11 @@ class DB(context: Context):SQLiteOpenHelper(context,DATABASE_NAME, null,DATABASE
     }
 
 }
+
+private fun Uri?.toByte(): String? {
+    context.contentResolver.openInputStream(uri)?.buffered()?.use {
+        it.readBytes()
+    }
+}
+
+
