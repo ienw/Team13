@@ -15,19 +15,19 @@ import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Window
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.room.*
 import com.getbase.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.app.*
-import kotlinx.android.synthetic.main.image_layout.*
 import kotlinx.android.synthetic.main.image_layout.view.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import java.io.File
 
 // class that contains image and location information
 
@@ -38,30 +38,29 @@ class PhotoLocation(
 }
 
 @Entity
-data class Marker(
-    @PrimaryKey val uid: Int,
-    @ColumnInfo( name = "latitude") val latitude: Double?,
-    @ColumnInfo(name = "longitude") val longitude: Double?,
-    @ColumnInfo(name = "image") val image: Uri?,
+data class MarkerData(
+    @PrimaryKey(autoGenerate = true) val uid: Int?,
+    @ColumnInfo(name = "latitude") val latitude: Double,
+    @ColumnInfo(name = "longitude") val longitude: Double,
+    @ColumnInfo(name = "image") val image: String,
 )
 
 
 @Dao
 interface MarkerDao {
-    @Query("SELECT * FROM Marker")
-    fun getAll(): List<Marker>
+    @Query("SELECT * FROM MarkerData")
+    fun getAll(): List<MarkerData>
 
     @Insert
-    fun insertAll(vararg marker: Marker)
+    fun insertAll(vararg marker: MarkerData)
 
     @Delete
-    fun delete(marker: Marker)
-
+    fun delete(marker: MarkerData)
 }
-@Database(entities = arrayOf(Marker::class), version = 1)
+
+@Database(entities = arrayOf(MarkerData::class), version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun markerDao(): MarkerDao
-
 }
 
 
@@ -71,13 +70,14 @@ val REQUEST_IMAGE_CAPTURE = 3
 class App : AppCompatActivity(), LocationListener{
 
     var lm: LocationManager? = null
-    var photoLocations = mutableListOf<PhotoLocation>()
+    var photoLocations = mutableListOf<MarkerData>()
+    var db: AppDatabase? = null
 
     @SuppressLint("MissingPermission")
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
+        Log.d("asd","CREATE")
         super.onCreate(savedInstanceState)
 
         val ctx = applicationContext
@@ -109,11 +109,15 @@ class App : AppCompatActivity(), LocationListener{
         findViewById<FloatingActionButton>(R.id.gallery).setOnClickListener {
             openGallery()
         }
-        val db = Room.databaseBuilder(
+        db = Room.databaseBuilder(
             applicationContext,
-            AppDatabase::class.java, "database-name"
-        ).build()
-        
+            AppDatabase::class.java, "test"
+        )
+            .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+            .build()
+        Log.d("asd", db.toString())
+        photoLocations = db!!.markerDao().getAll().toMutableList()
     }
 
     private fun showImage(uri: Uri) {
@@ -150,7 +154,8 @@ class App : AppCompatActivity(), LocationListener{
             val longitude = lm!!.getLastKnownLocation(LocationManager.GPS_PROVIDER).longitude
             if (image_uri != null) {
                 Log.d("asd", "RECDEIVED IMAGE ${image_uri.toString()}")
-                val marker = PhotoLocation(latitude, longitude, image_uri!!)
+                val marker = MarkerData(null, latitude, longitude, image_uri!!.toString())
+                db!!.markerDao().insertAll(marker)
                 photoLocations.add(marker)
                 addPhotoMarker(marker)
             }
@@ -169,7 +174,7 @@ class App : AppCompatActivity(), LocationListener{
         startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE)
     }
 
-    private fun addPhotoMarker(it: PhotoLocation) {
+    private fun addPhotoMarker(it: MarkerData) {
         val location = GeoPoint(it.latitude, it.longitude)
         var marker = Marker(map)
         val icon = ResourcesCompat.getDrawable(resources,R.drawable.marker_default, null)
@@ -177,7 +182,10 @@ class App : AppCompatActivity(), LocationListener{
             marker.icon = icon
         }
         marker.setOnMarkerClickListener(Marker.OnMarkerClickListener { marker, map ->
-            showImage(it.image)
+            Log.d("asd", it.image)
+            val uri = it.image.toUri()
+            Log.d("asd", uri.toString())
+            showImage(uri)
             true
         })
         marker.position = location
