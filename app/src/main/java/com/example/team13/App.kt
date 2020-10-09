@@ -192,11 +192,16 @@ class App : AppCompatActivity(), LocationListener{
         map.overlays.add(marker)
     }
 
+    private var haveCenteredMap = false
     override fun onLocationChanged(location: Location?) {
         if (location != null) {
             val userLocation = GeoPoint(location.latitude, location.longitude)
-            // center map to users location
-            map.controller.setCenter(userLocation)
+
+            // center map to users location on first load
+            if (!haveCenteredMap) {
+                haveCenteredMap = true
+                map.controller.setCenter(userLocation)
+            }
 
             // create user current location marker for map
             val userMarker = Marker(map)
